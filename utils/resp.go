@@ -16,11 +16,11 @@ const (
 )
 
 type Value struct {
-	typ   string
-	str   string
-	num   int
-	bulk  string
-	array []Value
+	Typ   string
+	Str   string
+	Num   int
+	Bulk  string
+	Array []Value
 }
 
 type Resp struct {
@@ -78,21 +78,21 @@ func (r *Resp) Read() (Value, error) {
 
 func (r *Resp) readArray() (Value, error) {
 	v := Value{}
-	v.typ = "array"
+	v.Typ = "array"
 
 	length, _, err := r.readInteger()
 	if err != nil {
 		return v, err
 	}
 
-	v.array = make([]Value, length)
+	v.Array = make([]Value, length)
 	for i := 0; i < length; i++ {
 		val, err := r.Read()
 		if err != nil {
 			return v, err
 		}
 
-		v.array[i] = val
+		v.Array[i] = val
 	}
 	return v, nil
 }
@@ -100,7 +100,7 @@ func (r *Resp) readArray() (Value, error) {
 func (r *Resp) readBulk() (Value, error) {
 	v := Value{}
 
-	v.typ = "bulk"
+	v.Typ = "bulk"
 
 	len, _, err := r.readInteger()
 	if err != nil {
@@ -111,7 +111,7 @@ func (r *Resp) readBulk() (Value, error) {
 
 	r.reader.Read(bulk)
 
-	v.bulk = string(bulk)
+	v.Bulk = string(bulk)
 
 	r.readLine()
 

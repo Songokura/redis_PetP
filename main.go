@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"redis_PetP/utils"
+	"strings"
 )
 
 func main() {
@@ -29,8 +30,28 @@ func main() {
 			return
 		}
 
-		fmt.Println(value)
+		if value.Typ != "array" {
+			fmt.Println("Invalid request, expected array")
+			continue
+		}
 
-		conn.Write([]byte("+OK\r\n"))
+		if len(value.Array) == 0 {
+			fmt.Println("Invalid request, expected array lenght > 0")
+			continue
+		}
+
+		command := strings.ToUpper(value.Array[0].Bulk)
+		args := value.Array[1:]
+
+		writer := utils.NewWriter(conn)
+
+		handler, ok := utils.Handlers[command]
+		if !ok {
+			fmt.Println("Invalid command:", command)
+			writer.Write(utils.Value{Typ: "string", Str: ""})
+			continue
+		}
+		result := handler(args)
+		writer.Write(result)
 	}
 }
