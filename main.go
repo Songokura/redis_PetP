@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"redis_PetP/utils"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 	defer conn.Close()
 
 	for {
-		resp := NewResp(conn)
+		resp := utils.NewResp(conn)
 		value, err := resp.Read()
 		if err != nil {
 			fmt.Println(err)
