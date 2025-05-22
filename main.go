@@ -20,6 +20,19 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+	defer aof.Close()
+
+	aof.Read(func(value utils.Value) {
+		command := strings.ToUpper(value.Array[0].Bulk)
+		args := value.Array[1:]
+
+		handler, ok := utils.Handlers[command]
+		if !ok {
+			fmt.Println("Invalid command: ", command)
+		}
+
+		handler(args)
+	})
 
 	conn, err := l.Accept()
 	if err != nil {
